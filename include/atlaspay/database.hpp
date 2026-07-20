@@ -2,6 +2,7 @@
 
 #include "atlaspay/models.hpp"
 
+#include <cstddef>
 #include <cstdint>
 #include <mutex>
 #include <optional>
