@@ -1,6 +1,7 @@
 #include "atlaspay/database.hpp"
 #include "atlaspay/payment_service.hpp"
 
+#include <array>
 #include <cstdio>
 #include <cstdlib>
 #include <filesystem>
@@ -8,6 +9,8 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <thread>
+#include <vector>
 #include <unistd.h>
 
 namespace {
@@ -85,6 +88,29 @@ int main() {
         expect_throws<atlaspay::RiskRejectedError>(
             [&] { service.transfer(alice.id, bob.id, 1'000, "transfer-frozen-0001"); },
             "frozen destination should reject the transfer");
+
+        const auto carol = service.create_account("Carol", "USD");
+        const auto dave = service.create_account("Dave", "USD");
+        service.deposit(carol.id, 50'000, "deposit-carol-0001");
+        std::array<std::string, 8> concurrent_transaction_ids;
+        std::vector<std::thread> workers;
+        for (std::size_t index = 0; index < concurrent_transaction_ids.size(); ++index) {
+            workers.emplace_back([&, index] {
+                concurrent_transaction_ids[index] =
+                    service.transfer(carol.id, dave.id, 5'000, "concurrent-transfer-0001").id;
+            });
+        }
+        for (auto& worker : workers) {
+            worker.join();
+        }
+        for (const auto& id : concurrent_transaction_ids) {
+            expect(id == concurrent_transaction_ids.front(),
+                   "concurrent idempotent requests returned different transactions");
+        }
+        expect(service.get_account(carol.id).balance_minor == 45'000,
+               "concurrent idempotency duplicated source debit");
+        expect(service.get_account(dave.id).balance_minor == 5'000,
+               "concurrent idempotency duplicated destination credit");
 
         const auto history = service.list_transactions(alice.id);
         expect(history.size() == 3, "unexpected transaction history size");

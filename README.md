@@ -9,7 +9,7 @@ AtlasPay is a PayPal/Coinbase-inspired backend project written in **modern C++20
 - **Double-entry transfer ledger:** every transfer creates an equal debit and credit.
 - **Integer money representation:** amounts use 64-bit minor units rather than floating point.
 - **Atomic persistence:** SQLite transactions prevent partial transfers.
-- **Idempotency:** retried deposits/transfers cannot duplicate funds.
+- **Idempotency:** retried or concurrent duplicate deposits/transfers cannot duplicate funds.
 - **Risk checks:** per-transfer, rolling 24-hour, velocity, account-state, and currency controls.
 - **Linux-native service:** POSIX sockets, `SIGINT`/`SIGTERM`, systemd hardening, Docker support.
 - **Engineering quality:** CMake, unit/integration tests, GitHub Actions, sanitizer job, warning-clean builds.
