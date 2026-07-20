@@ -40,4 +40,9 @@ target_link_libraries(atlaspay_tests PRIVATE atlaspay_core)
 target_compile_options(atlaspay_tests PRIVATE -Wall -Wextra -Wpedantic -Wconversion -Wshadow)
 add_test(NAME atlaspay_tests COMMAND atlaspay_tests)
 
+if(ATLASPAY_ENABLE_SANITIZERS AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(atlaspay_tests PRIVATE -fsanitize=address,undefined -fno-omit-frame-pointer)
+    target_link_options(atlaspay_tests PRIVATE -fsanitize=address,undefined)
+endif()
+
 install(TARGETS atlaspay_server RUNTIME DESTINATION bin)
