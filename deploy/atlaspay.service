@@ -1,0 +1,23 @@
+[Unit]
+Description=AtlasPay C++ Financial Service
+After=network.target
+
+[Service]
+Type=simple
+User=atlaspay
+Group=atlaspay
+WorkingDirectory=/var/lib/atlaspay
+Environment=ATLASPAY_DB_PATH=/var/lib/atlaspay/atlaspay.db
+Environment=ATLASPAY_BIND=0.0.0.0
+Environment=ATLASPAY_PORT=8080
+ExecStart=/usr/local/bin/atlaspay_server
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/atlaspay
+
+[Install]
+WantedBy=multi-user.target
