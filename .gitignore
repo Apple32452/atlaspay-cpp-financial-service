@@ -1,31 +1,20 @@
+# CMake build artifacts
 build/
-build-*/
-*.db
-*.db-shm
-*.db-wal
+cmake-build-*/
+
+# Compiled binaries and libraries
 *.o
 *.a
 *.so
+*.dylib
+*.exe
+
+# Runtime files
+atlaspay.db
+atlaspay.db-*
+atlaspay.log
+
+# IDE and operating-system files
 .DS_Store
 .vscode/
 .idea/
-
-# Build artifacts
-build/
-
-# Runtime data
-atlaspay.db
-atlaspay.log
-
-# macOS
-.DS_Store
-
-# Build artifacts
-build/
-
-# Runtime data
-atlaspay.db
-atlaspay.log
-
-# macOS
-.DS_Store
