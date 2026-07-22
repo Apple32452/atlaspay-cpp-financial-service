@@ -9,3 +9,13 @@ build-*/
 .DS_Store
 .vscode/
 .idea/
+
+# Build artifacts
+build/
+
+# Runtime data
+atlaspay.db
+atlaspay.log
+
+# macOS
+.DS_Store
