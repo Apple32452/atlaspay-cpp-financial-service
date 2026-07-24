@@ -56,8 +56,14 @@ std::string PaymentService::normalize_currency(const std::string& currency) {
 }
 
 void PaymentService::validate_owner(const std::string& owner) {
-    if (owner.empty() || owner.size() > 120) {
-        throw ValidationError("owner must contain 1 to 120 characters");
+    const bool contains_non_whitespace =
+        std::any_of(owner.begin(), owner.end(), [](unsigned char character) {
+            return std::isspace(character) == 0;
+        });
+
+    if (owner.empty() || owner.size() > 120 || !contains_non_whitespace) {
+        throw ValidationError(
+            "owner must contain 1 to 120 characters and cannot be whitespace-only");
     }
 }
 
