@@ -48,6 +48,14 @@ int main() {
         limits.max_transfers_per_velocity_window = 10;
         atlaspay::PaymentService service(database, limits);
 
+        expect_throws<atlaspay::ValidationError>(
+            [&] { service.create_account("", "USD"); },
+            "empty account owner should be rejected");
+
+        expect_throws<atlaspay::ValidationError>(
+            [&] { service.create_account("   ", "USD"); },
+            "whitespace-only account owner should be rejected");
+
         const auto alice = service.create_account("Alice", "usd");
         const auto bob = service.create_account("Bob", "USD");
         expect(alice.currency == "USD", "currency normalization failed");
