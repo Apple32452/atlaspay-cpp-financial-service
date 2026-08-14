@@ -73,6 +73,16 @@ int main() {
             [&] { service.deposit(alice.id, 99'999, "deposit-alice-0001"); },
             "reusing an idempotency key for a changed request should fail");
 
+        expect_throws<atlaspay::ValidationError>(
+            [&] {
+                service.transfer(
+                    alice.id,
+                    alice.id,
+                    1'000,
+                    "self-transfer-0001");
+            },
+            "self-transfer should be rejected");
+
         const auto transfer = service.transfer(alice.id, bob.id, 25'000, "transfer-alice-bob-0001");
         expect(transfer.status == "completed", "transfer did not complete");
         expect(service.get_account(alice.id).balance_minor == 75'000, "source balance mismatch");
