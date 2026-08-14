@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(
-    AtlasPay
-    VERSION 1.0.0
-    LANGUAGES CXX
+project(atlaspay VERSION 1.0.0 LANGUAGES CXX)
+
+option(
+    ATLASPAY_ENABLE_SANITIZERS
+    "Enable AddressSanitizer and UndefinedBehaviorSanitizer"
+    OFF
 )
 
 # ------------------------------------------------------------
@@ -21,8 +23,17 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 find_package(SQLite3 REQUIRED)
 find_package(Threads REQUIRED)
 
+# Support both newer and older CMake SQLite target names.
+if(TARGET SQLite3::SQLite3)
+    set(ATLASPAY_SQLITE_TARGET SQLite3::SQLite3)
+elseif(TARGET SQLite::SQLite3)
+    set(ATLASPAY_SQLITE_TARGET SQLite::SQLite3)
+else()
+    message(FATAL_ERROR "No supported SQLite3 CMake target was found")
+endif()
+
 # ------------------------------------------------------------
-# AtlasPay core library
+# Core library
 # ------------------------------------------------------------
 
 add_library(atlaspay_core STATIC
@@ -38,11 +49,14 @@ target_include_directories(atlaspay_core
 
 target_link_libraries(atlaspay_core
     PUBLIC
-        SQLite3::SQLite3
+        ${ATLASPAY_SQLITE_TARGET}
         Threads::Threads
 )
 
-# Helpful compiler warnings
+# ------------------------------------------------------------
+# Compiler warnings
+# ------------------------------------------------------------
+
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
     target_compile_options(atlaspay_core
         PRIVATE
@@ -53,7 +67,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
 endif()
 
 # ------------------------------------------------------------
-# AtlasPay HTTP server
+# HTTP server
 # ------------------------------------------------------------
 
 add_executable(atlaspay_server
@@ -84,15 +98,64 @@ target_link_libraries(atlaspay_tests
 )
 
 add_test(
-    NAME atlaspay_payment_service_tests
+    NAME atlaspay_tests
     COMMAND atlaspay_tests
 )
 
 # ------------------------------------------------------------
-# Build information
+# Sanitizers
+# ------------------------------------------------------------
+
+if(ATLASPAY_ENABLE_SANITIZERS)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
+
+        message(STATUS "AtlasPay sanitizers enabled")
+
+        set(ATLASPAY_SANITIZER_FLAGS
+            -fsanitize=address,undefined
+            -fno-omit-frame-pointer
+        )
+
+        target_compile_options(atlaspay_core
+            PRIVATE
+                ${ATLASPAY_SANITIZER_FLAGS}
+        )
+
+        target_compile_options(atlaspay_server
+            PRIVATE
+                ${ATLASPAY_SANITIZER_FLAGS}
+        )
+
+        target_compile_options(atlaspay_tests
+            PRIVATE
+                ${ATLASPAY_SANITIZER_FLAGS}
+        )
+
+        target_link_options(atlaspay_server
+            PRIVATE
+                ${ATLASPAY_SANITIZER_FLAGS}
+        )
+
+        target_link_options(atlaspay_tests
+            PRIVATE
+                ${ATLASPAY_SANITIZER_FLAGS}
+        )
+
+    else()
+        message(
+            WARNING
+            "ATLASPAY_ENABLE_SANITIZERS is ON, but the compiler is unsupported"
+        )
+    endif()
+endif()
+
+# ------------------------------------------------------------
+# Configuration information
 # ------------------------------------------------------------
 
 message(STATUS "AtlasPay configuration")
 message(STATUS "  C++ standard: ${CMAKE_CXX_STANDARD}")
 message(STATUS "  Build type: ${CMAKE_BUILD_TYPE}")
-message(STATUS "  SQLite3 version: ${SQLite3_VERSION}")
+message(STATUS "  SQLite version: ${SQLite3_VERSION}")
+message(STATUS "  SQLite target: ${ATLASPAY_SQLITE_TARGET}")
+message(STATUS "  Sanitizers: ${ATLASPAY_ENABLE_SANITIZERS}")
