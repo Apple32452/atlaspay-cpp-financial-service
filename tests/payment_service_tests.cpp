@@ -290,6 +290,20 @@ int main() {
             },
             "frozen destination should reject the transfer");
 
+
+        const auto frozen_deposit_account =
+    service.create_account("Frozen Deposit User", "USD");
+
+service.freeze_account(frozen_deposit_account.id);
+
+expect_throws<atlaspay::RiskRejectedError>(
+    [&] {
+        service.deposit(
+            frozen_deposit_account.id,
+            5'000,
+            "deposit-frozen-0001");
+    },
+    "deposit to frozen account should be rejected");
         // ------------------------------------------------------------
         // Concurrent idempotency
         // ------------------------------------------------------------
