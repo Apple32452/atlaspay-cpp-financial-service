@@ -152,6 +152,23 @@ int main() {
         expect(
             service.get_account(alice.id).balance_minor == 100'000,
             "deposit balance mismatch");
+expect_throws<atlaspay::ValidationError>(
+    [&] {
+        service.deposit(
+            alice.id,
+            0,
+            "deposit-zero-0001");
+    },
+    "zero deposit should be rejected");
+
+expect_throws<atlaspay::ValidationError>(
+    [&] {
+        service.deposit(
+            alice.id,
+            -1'000,
+            "deposit-negative-0001");
+    },
+    "negative deposit should be rejected");
 
         // ------------------------------------------------------------
         // Deposit idempotency
@@ -218,6 +235,25 @@ int main() {
             service.get_account(bob.id).balance_minor == 25'000,
             "destination balance mismatch");
 
+expect_throws<atlaspay::ValidationError>(
+    [&] {
+        service.transfer(
+            alice.id,
+            bob.id,
+            0,
+            "transfer-zero-0001");
+    },
+    "zero transfer should be rejected");
+
+expect_throws<atlaspay::ValidationError>(
+    [&] {
+        service.transfer(
+            alice.id,
+            bob.id,
+            -1'000,
+            "transfer-negative-0001");
+    },
+    "negative transfer should be rejected");
         // ------------------------------------------------------------
         // Transfer idempotency
         // ------------------------------------------------------------
