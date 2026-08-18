@@ -152,7 +152,32 @@ int main() {
         expect(
             service.get_account(alice.id).balance_minor == 100'000,
             "deposit balance mismatch");
+expect_throws<atlaspay::ValidationError>(
+    [&] {
+        service.deposit(
+            alice.id,
+            1'000,
+            "short");
+    },
+    "short idempotency key should be rejected");
 
+expect_throws<atlaspay::ValidationError>(
+    [&] {
+        service.deposit(
+            alice.id,
+            1'000,
+            std::string(129, 'x'));
+    },
+    "overlong idempotency key should be rejected");
+expect_throws<atlaspay::ValidationError>(
+    [&] {
+        service.transfer(
+            alice.id,
+            bob.id,
+            1'000,
+            "tiny");
+    },
+    "short transfer idempotency key should be rejected");
         // ------------------------------------------------------------
         // Deposit idempotency
         // ------------------------------------------------------------
