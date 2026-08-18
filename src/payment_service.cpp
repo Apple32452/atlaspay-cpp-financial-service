@@ -314,11 +314,15 @@ PaymentService::list_transactions(
     const std::string& account_id,
     std::size_t limit) const {
 
+    if (limit == 0 || limit > 1000) {
+        throw ValidationError(
+            "transaction history limit must be between 1 and 1000");
+    }
+
     (void)get_account(account_id);
 
     return database_.list_transactions_for_account(
         account_id,
         limit);
 }
-
 }  // namespace atlaspay
