@@ -1,1 +1,0 @@
-/usr/bin/c++ -g -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names -fsanitize=address,undefined CMakeFiles/atlaspay_server.dir/src/main.cpp.o CMakeFiles/atlaspay_server.dir/src/http_server.cpp.o -o atlaspay_server  libatlaspay_core.a /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib/libsqlite3.tbd
