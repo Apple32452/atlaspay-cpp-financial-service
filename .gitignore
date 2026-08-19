@@ -1,20 +1,64 @@
-# CMake build artifacts
+# -----------------------------
+# CMake build directories
+# -----------------------------
 build/
+build-*/
 cmake-build-*/
 
-# Compiled binaries and libraries
+# -----------------------------
+# CMake generated files
+# -----------------------------
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CTestTestfile.cmake
+Makefile
+Testing/
+
+# -----------------------------
+# Compiled C/C++ artifacts
+# -----------------------------
 *.o
+*.obj
 *.a
 *.so
 *.dylib
+*.dll
 *.exe
+*.out
 
-# Runtime files
-atlaspay.db
-atlaspay.db-*
-atlaspay.log
+# -----------------------------
+# AtlasPay runtime files
+# -----------------------------
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+*.log
 
-# IDE and operating-system files
+# -----------------------------
+# macOS
+# -----------------------------
 .DS_Store
+
+# -----------------------------
+# Editors / IDEs
+# -----------------------------
 .vscode/
 .idea/
+*.swp
+*.swo
+
+# -----------------------------
+# Temporary files
+# -----------------------------
+*.tmp
+*.temp
+*~
+
+# -----------------------------
+# Environment / local config
+# -----------------------------
+.env
+.env.*
