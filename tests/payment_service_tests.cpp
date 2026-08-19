@@ -368,6 +368,24 @@ expect_throws<atlaspay::RiskRejectedError>(
             history.size() == 3,
             "unexpected transaction history size");
 
+	expect_throws<atlaspay::ValidationError>(
+    [&] {
+        service.list_transactions(alice.id, 0);
+    },
+    "zero transaction history limit should be rejected");
+
+expect_throws<atlaspay::ValidationError>(
+    [&] {
+        service.list_transactions(alice.id, 1001);
+    },
+    "transaction history limit above 1000 should be rejected");
+
+const auto limited_history =
+    service.list_transactions(alice.id, 2);
+
+expect(
+    limited_history.size() <= 2,
+    "transaction history exceeded requested limit");
         // ------------------------------------------------------------
         // Success
         // ------------------------------------------------------------

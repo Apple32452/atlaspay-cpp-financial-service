@@ -1,0 +1,2 @@
+/usr/bin/ar qc libatlaspay_core.a CMakeFiles/atlaspay_core.dir/src/database.cpp.o CMakeFiles/atlaspay_core.dir/src/risk_engine.cpp.o CMakeFiles/atlaspay_core.dir/src/payment_service.cpp.o
+/usr/bin/ranlib libatlaspay_core.a
