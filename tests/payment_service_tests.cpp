@@ -135,6 +135,45 @@ int main() {
             bob.balance_minor == 0,
             "new destination account must start at zero");
 
+
+// ------------------------------------------------------------
+// Missing-account validation
+// ------------------------------------------------------------
+
+expect_throws<atlaspay::NotFoundError>(
+    [&] {
+        service.get_account("acct_does_not_exist");
+    },
+    "getting a nonexistent account should fail");
+
+expect_throws<atlaspay::NotFoundError>(
+    [&] {
+        service.deposit(
+            "acct_does_not_exist",
+            1'000,
+            "missing-deposit-0001");
+    },
+    "deposit to nonexistent account should fail");
+
+expect_throws<atlaspay::NotFoundError>(
+    [&] {
+        service.transfer(
+            "acct_does_not_exist",
+            bob.id,
+            1'000,
+            "missing-source-0001");
+    },
+    "transfer from nonexistent source account should fail");
+
+expect_throws<atlaspay::NotFoundError>(
+    [&] {
+        service.transfer(
+            alice.id,
+            "acct_does_not_exist",
+            1'000,
+            "missing-destination-0001");
+    },
+    "transfer to nonexistent destination account should fail");
         // ------------------------------------------------------------
         // Deposits
         // ------------------------------------------------------------
