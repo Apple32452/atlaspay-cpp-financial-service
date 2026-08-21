@@ -103,6 +103,20 @@ add_test(
 )
 
 # ------------------------------------------------------------
+# Benchmarks
+# ------------------------------------------------------------
+
+add_executable(atlaspay_benchmark
+    benchmarks/transaction_benchmark.cpp
+)
+
+target_link_libraries(atlaspay_benchmark
+    PRIVATE
+        atlaspay_core
+        Threads::Threads
+)
+
+# ------------------------------------------------------------
 # Sanitizers
 # ------------------------------------------------------------
 
